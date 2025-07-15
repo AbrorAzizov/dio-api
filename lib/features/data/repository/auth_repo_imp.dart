@@ -8,27 +8,36 @@ import '../../../service_locator.dart';
 import '../../domain/repo/auth_repo.dart';
 
 class AuthRepoImp implements AuthRepo {
+
+
   @override
-  Future<Either> signIn(User user) async{
-
+  Future<Either> signIn(UserModel user) async {
     final result = await sl<AuthApiService>().signIn(user);
-    result.fold((l) => Left(_l
-    ), (r) {
-
-    },)
-
+   return  result.fold(
+      (l) => Left(l),
+      (data) async {
+        final token = data['token'];
+        final pref = await SharedPreferences.getInstance();
+        if (token is String) {
+          await pref.setString('token', token);
+          return Right(data);
+        } else {
+          return Left('invalid token');
+        }
+      },
+    );
   }
 
   @override
   @override
-  Future<Either> signUp(User user) async {
+  Future<Either> signUp(UserModel user) async {
     final result = await sl<AuthApiService>().signup(user);
 
     return await result.fold<Future<Either>>(
-          (l) async {
+      (l) async {
         return Left(l);
       },
-          (data) async {
+      (data) async {
         final response = data as Response;
 
         final prefs = await SharedPreferences.getInstance();
@@ -43,10 +52,21 @@ class AuthRepoImp implements AuthRepo {
     );
   }
 
-
   @override
   Future<bool> isLoggedIn() async {
     return await sl<AuthLocalService>().isLoggedIn();
   }
 
+  @override
+  Future<Either> getUser() async{
+    final result = await sl<AuthApiService>().getUser();
+    return result.fold((error) {
+      return Left(error);
+    }, (data) {
+      final model = UserModel.fromMap(data);
+      final entity = model.toEntity();
+      return Right(entity);
+    },);
+
+  }
 }

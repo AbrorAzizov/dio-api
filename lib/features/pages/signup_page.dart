@@ -116,7 +116,7 @@ class _SignupPageState extends State<SignupPage> {
                       final password = passwordController.text;
                       final email = emailController.text;
                       context.read<AuthCubit>().sigUp(
-                          User(password: password, email: email, name: name));
+                          UserModel(password: password, email: email, name: name));
                     },
                     style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),

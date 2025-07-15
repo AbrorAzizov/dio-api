@@ -7,48 +7,46 @@ import 'package:dio_sign_up/features/domain/repo/auth_repo.dart';
 import '../../service_locator.dart';
 import '../data/models/sign_up_parameters.dart';
 
-class AuthCubit extends Cubit<AuthState>{
+class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super (AuthStateInitial());
 
 
-  Future<void> initialize() async{
-
+  Future<void> initialize() async {
     final isLoggedIn = await sl<AuthRepo>().isLoggedIn();
-    if (isLoggedIn){
-      emit (AuthStateLoggedIn());
+    if (isLoggedIn) {
+      emit(AuthStateLoggedIn());
     } else {
-      emit( AuthStateSignup());
+      emit(AuthStateSignup());
     }
   }
 
 
-  Future<void> sigUp (User user) async{
+  Future<void> sigUp(UserModel user) async {
     emit(AuthStateLoading());
-    try{
+    try {
       Either response = await AuthRepoImp().signUp(user);
-      response.fold((error){
+      response.fold((error) {
         emit(AuthStateError(authError: error));
-      }, (data){
+      }, (data) {
         emit(AuthStateLoggedIn());
       });
-    }catch (e){
+    } catch (e) {
       emit(AuthStateError(authError: "$e"));
     }
-
   }
 
-  Future<void> signIn (User user) async{
+  Future<void> signIn(UserModel userModel) async {
     emit(AuthStateLoading());
-    try{
-      Either response = await AuthRepoImp().signIn(user);
-      response.fold((error){
+    try {
+      Either response = await AuthRepoImp().signIn(userModel);
+      response.fold((error) {
         emit(AuthStateError(authError: error));
-      }, (data){
+      }, (data) {
         emit(AuthStateLoggedIn());
       });
-    }catch (e){
+    } catch (e) {
       emit(AuthStateError(authError: "$e"));
     }
-
   }
+
 }

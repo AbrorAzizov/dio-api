@@ -1,6 +1,7 @@
 
 
 
+
 abstract class AuthState {}
 
 class AuthStateSignup extends AuthState{}
@@ -15,8 +16,4 @@ class AuthStateError  extends AuthState{
   AuthStateError({required this.authError});
 }
 
-class AuthStateLoggedIn extends AuthState{
-
-
-
-}
+class AuthStateLoggedIn extends AuthState{}
